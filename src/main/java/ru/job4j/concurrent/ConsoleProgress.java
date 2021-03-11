@@ -5,12 +5,11 @@ public class ConsoleProgress implements Runnable {
     public void run() {
         try {
         while (!Thread.currentThread().isInterrupted()) {
-            System.out.print("\rload: " + "\\");
-            Thread.sleep(300);
-            System.out.print("\rload: " + "|");
-            Thread.sleep(300);
-            System.out.print("\rload: " + "/");
-            Thread.sleep(300);
+            char[] chars = new char[] {'\\', '|', '/'};
+            for (char temp : chars) {
+                System.out.print("\rload: " + temp);
+                Thread.sleep(300);
+            }
         }
         } catch (InterruptedException e) {
             e.printStackTrace();
