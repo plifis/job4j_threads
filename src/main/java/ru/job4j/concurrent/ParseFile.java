@@ -3,7 +3,7 @@ package ru.job4j.concurrent;
 import java.io.*;
 
 public class ParseFile {
-    private File file;
+    private volatile File file;
 
     public synchronized void setFile(File f) {
         file = f;
