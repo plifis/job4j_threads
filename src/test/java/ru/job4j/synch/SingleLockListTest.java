@@ -15,12 +15,15 @@ public class SingleLockListTest {
         SingleLockList<Integer> list = new SingleLockList<>();
         Thread first = new Thread(() -> list.add(1));
         Thread second = new Thread(() -> list.add(2));
+        Thread three = new Thread(() -> list.add(3));
         first.start();
         second.start();
+        three.start();
         first.join();
         second.join();
+        three.join();
         Set<Integer> rsl = new TreeSet<>();
         list.iterator().forEachRemaining(rsl::add);
-        assertThat(rsl, is(Set.of(1, 2)));
+        assertThat(rsl, is(Set.of(1, 2, 3)));
     }
 }
