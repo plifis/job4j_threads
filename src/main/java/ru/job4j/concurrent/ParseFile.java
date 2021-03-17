@@ -1,6 +1,7 @@
 package ru.job4j.concurrent;
 
 import java.io.*;
+import java.util.function.Predicate;
 
 public class ParseFile {
     private volatile File file;
@@ -13,32 +14,37 @@ public class ParseFile {
         return file;
     }
 
-    public synchronized String getContent() throws IOException {
-        InputStream i = new FileInputStream(file);
-        StringBuffer buffer = new StringBuffer();
-        int data;
-        while ((data = i.read()) > -1) {
-            buffer.append((char) data);
-        }
-        return buffer.toString();
+    public synchronized String getContent() {
+        return this.getText(s -> true);
     }
 
-    public synchronized String getContentWithoutUnicode() throws IOException {
-        InputStream i = new FileInputStream(file);
-        StringBuffer buffer = new StringBuffer();
-        int data;
-        while ((data = i.read()) > -1) {
-            if (data < 0x80) {
-                buffer.append((char) data);
+    public synchronized String getContentWithoutUnicode() {
+        return this.getText(s -> s < 0x80);
+    }
+
+    private synchronized String getText(Predicate<Integer> predicate) {
+        StringBuilder builder = new StringBuilder();
+        try (InputStream i = new FileInputStream(file)) {
+            int data;
+            while ((data = i.read()) > -1) {
+                if (predicate.test(data)) {
+                    builder.append((char) data);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return buffer.toString();
+        return builder.toString();
     }
 
     public synchronized void saveContent(String content) throws IOException {
-        OutputStream o = new FileOutputStream(file);
-        for (int i = 0; i < content.length(); i++) {
-            o.write(content.charAt(i));
+        try (OutputStream o = new FileOutputStream(file)) {
+            for (int i = 0; i < content.length(); i++) {
+                o.write(content.charAt(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 }
