@@ -6,7 +6,7 @@ import net.jcip.annotations.ThreadSafe;
 @ThreadSafe
 public class CountBarrier {
     @GuardedBy("monitor")
-    private final Object monitor = false;
+    private final Object monitor = this;
     private final int total;
     private int count = 0;
 
@@ -14,16 +14,21 @@ public class CountBarrier {
         this.total = total;
     }
 
-    public synchronized void count() {
-        count++;
+    public void count() {
+        synchronized (monitor) {
+            count++;
+            monitor.notifyAll();
+        }
     }
 
     public void await() throws InterruptedException {
         synchronized (monitor) {
-            if (count != total) {
-                monitor.wait();
-            } else {
-                monitor.notifyAll();
+            while (count < total) {
+                try {
+                    monitor.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
