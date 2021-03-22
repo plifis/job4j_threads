@@ -1,5 +1,6 @@
 package ru.job4j;
 
+import jdk.dynalink.linker.support.SimpleLinkRequest;
 import net.jcip.annotations.*;
 
 import java.util.LinkedList;
@@ -13,6 +14,10 @@ public class SimpleBlockingQueue<T> {
 
     public SimpleBlockingQueue(int total) {
         this.total = total;
+    }
+
+    public SimpleBlockingQueue() {
+        this.total = 3;
     }
 
     public synchronized void offer(T value) {
