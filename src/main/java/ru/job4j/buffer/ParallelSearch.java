@@ -6,20 +6,11 @@ public class ParallelSearch {
 
     public static void main(String[] args) {
         SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<Integer>();
-        final Thread consumer = new Thread(
-                () -> {
-                    while (true) {
-                        System.out.println(queue.poll());
-                        System.out.println("Нить получения");
-                    }
-                }
-        );
-        consumer.start();
         Thread producer = new Thread(
                 () -> {
                     for (int index = 0; index != 3; index++) {
-                        queue.offer(index);
                         System.out.println("Нить добавления");
+                        queue.offer(index);
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
@@ -27,7 +18,16 @@ public class ParallelSearch {
                         }
                     }
                 }
-
         );
+        producer.start();
+        final Thread consumer = new Thread(
+                () -> {
+                        while (producer.isAlive()) {
+                            System.out.println("Нить получения");
+                            queue.poll();
+                        }
+                }
+        );
+        consumer.start();
     }
 }
