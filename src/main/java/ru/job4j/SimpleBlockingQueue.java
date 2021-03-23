@@ -26,6 +26,7 @@ public class SimpleBlockingQueue<T> {
                 this.wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+//                Thread.currentThread().interrupt();
             }
         }
         queue.offer(value);
@@ -38,6 +39,7 @@ public class SimpleBlockingQueue<T> {
                 this.wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+//                Thread.currentThread().interrupt();
             }
         }
         T t = queue.poll();
