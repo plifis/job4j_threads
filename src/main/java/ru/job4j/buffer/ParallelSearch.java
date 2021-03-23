@@ -2,8 +2,6 @@ package ru.job4j.buffer;
 
 import ru.job4j.SimpleBlockingQueue;
 
-import javax.swing.plaf.TableHeaderUI;
-
 public class ParallelSearch {
 
     public static void main(String[] args) throws InterruptedException {
