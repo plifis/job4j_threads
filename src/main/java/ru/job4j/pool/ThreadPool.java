@@ -8,7 +8,6 @@ import java.util.List;
 public class ThreadPool {
     private final List<Thread> threads = new LinkedList<>();
     private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(20);
-    int size = Runtime.getRuntime().availableProcessors();
 
     public ThreadPool() {
         int size = Runtime.getRuntime().availableProcessors();
