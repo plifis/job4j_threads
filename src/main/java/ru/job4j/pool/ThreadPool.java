@@ -33,23 +33,6 @@ public class ThreadPool {
             }
     }
 
-    public void start() {
-        while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
-            Thread thread = getFreeThread();
-        }
-    }
-
-    private Thread getFreeThread() {
-        for (Thread thread : threads) {
-            synchronized (this) {
-                if (thread.getState() == Thread.State.WAITING) {
-                    return thread;
-                }
-            }
-        }
-        return null;
-    }
-
     public void work(Runnable job) {
         tasks.offer(job);
         synchronized (this) {
