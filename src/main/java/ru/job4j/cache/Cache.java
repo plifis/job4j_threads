@@ -25,10 +25,13 @@ public class Cache {
      */
     public boolean update(Base model) {
        return memory.computeIfPresent(model.getId(), (k, v) -> {
-            if (checkVersion(v)) {
-                increment(model);
-                v = model;
+           Base temp = memory.get(model.getId());
+            if (temp.getVersion().get() != model.getVersion().get()) {
+                throw new OptimisticException("Versions are not equal");
             }
+            int version = model.getVersion().get();
+            model.getVersion().set(version + 1);
+            v = model;
             return v;
         }
         ) != null;
@@ -40,32 +43,6 @@ public class Cache {
      */
     public void delete(Base model) {
         memory.remove(model.getId());
-    }
-
-    /**
-     * Проверяет версию объекта класса Base (поле version)
-     * @param model объект версию, которого необходимо проверить
-     * @return возвращаем либо истину, либо Исключение, если версии не равны
-     */
-    private boolean checkVersion(Base model) {
-        Base temp = memory.get(model.getId());
-        if (temp.getVersion() != model.getVersion()) {
-            throw new OptimisticException("Versions are not equal");
-        }
-        return true;
-    }
-
-    /**
-     * Увеличивает версию объекта
-     * @param model объект версию которого необходимо увеличить
-     */
-    private void increment(Base model) {
-        Integer temp;
-        Integer nextStep;
-        do {
-            temp = model.getVersion().get();
-            nextStep = temp + 1;
-        } while (!model.getVersion().compareAndSet(temp, nextStep));
     }
 
     /**
