@@ -5,6 +5,12 @@ import ru.job4j.SimpleBlockingQueue;
 import java.util.LinkedList;
 import java.util.List;
 
+
+/**
+ * Пул потоков.
+ * Создается список потоков по количеству доступных процессоров в системе.
+ * Каждый поток поток получает задания пока в Очереди (блокирующая) есть доступные задания
+ */
 public class ThreadPool {
     private final List<Thread> threads = new LinkedList<>();
     private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(20);
@@ -16,15 +22,7 @@ public class ThreadPool {
                         () -> {
                             while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
                             Runnable runnable = tasks.poll();
-                            if (runnable != null) {
                                 runnable.run();
-                            } else {
-                                try {
-                                    this.wait();
-                                } catch (InterruptedException e) {
-                                    Thread.currentThread().interrupt();
-                                }
-                            }
                         }
                         }
                 ));
@@ -34,9 +32,6 @@ public class ThreadPool {
 
     public void work(Runnable job) {
         tasks.offer(job);
-        synchronized (this) {
-            this.notifyAll();
-        }
     }
 
     public void shutdown() {
@@ -49,7 +44,7 @@ public class ThreadPool {
 
     public static void main(String[] args) throws InterruptedException {
         ThreadPool threadPool = new ThreadPool();
-        for (int i = 0; i < 31; i++) {
+        for (int i = 0; i < 100; i++) {
             Task task = new Task("jobNumber" + i);
                 threadPool.work(task);
         }
