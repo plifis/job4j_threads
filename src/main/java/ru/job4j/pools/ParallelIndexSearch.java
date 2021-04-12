@@ -11,6 +11,7 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
     private final T[] array;
     private final ForkJoinPool pool;
     private final T target;
+    int iteration = 0;
      private static final int THRESHOLD = 10;
 
 
@@ -27,14 +28,16 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
             return this.search(array, target);
         } else {
             int mid = array.length / 2;
+            int startIndex = mid;
+            iteration++;
             T[] leftArr = Arrays.copyOfRange(array, 0, mid);
             T[] rightArr = Arrays.copyOfRange(array, mid + 1, array.length - 1);
-           ParallelIndexSearch<T> left = new ParallelIndexSearch<T>(leftArr, target);
-           ParallelIndexSearch<T> right = new ParallelIndexSearch<T>(rightArr, target);
+           ParallelIndexSearch<T> left = new ParallelIndexSearch<>(leftArr, target);
+           ParallelIndexSearch<T> right = new ParallelIndexSearch<>(rightArr, target);
            ForkJoinTask.invokeAll(left, right);
            int leftRes = left.join();
            int rightRes = right.join();
-           return this.merge(leftRes, rightRes);
+           return this.merge(leftRes, rightRes, startIndex, iteration);
         }
     }
 
@@ -59,15 +62,16 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
      * @param right индекс правого массива, если значения не было найдено -1
      * @return возвращаем первый найденный индекс
      */
-    private Integer merge(int left, int right) {
+    private Integer merge(int left, int right, int startIndex, int iteration) {
         int index;
         if (left > -1) {
             index = left;
         } else if (right > -1) {
-            index = right;
+            index = right + startIndex + iteration;
         } else {
             throw new IllegalArgumentException("Искомое значение не найдено");
         }
         return index;
     }
+
 }

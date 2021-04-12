@@ -8,10 +8,12 @@ import static org.junit.Assert.*;
 public class ParallelIndexSearchTest {
     @Test
     public void whenAddArrayIntegerThenGetIndex() {
-        Integer[] arr = new Integer[] {4, 5, 7, 9, 2, 0, 11, 1, 3, 6, 8, 12, 14, 15, 16};
-        ParallelIndexSearch<Integer> search = new ParallelIndexSearch<Integer>(arr, 5);
-        assertThat(search.compute(), is(1));
+        Integer[] arr = new Integer[] {4, 5, 7, 9, 2, 0, 11, 1, 3, 6,
+                                        8, 12, 14, 15, 16};
+        ParallelIndexSearch<Integer> search = new ParallelIndexSearch<Integer>(arr, 15);
+        assertThat(search.compute(), is(13));
     }
+
 
     @Test
     public void whenAddArrayStringThenGetIndex() {
