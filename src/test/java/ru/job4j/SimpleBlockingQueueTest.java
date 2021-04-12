@@ -1,11 +1,8 @@
 package ru.job4j;
 
-import org.apache.log4j.pattern.LineSeparatorPatternConverter;
 import org.junit.Test;
-
 import java.util.*;
 import java.util.stream.IntStream;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -78,12 +75,13 @@ public class SimpleBlockingQueueTest {
         Thread consumer = new Thread(
                 () -> {
                     while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
-                           try {
+                         //  try {
                                buffer.add(queue.poll());
-                               Thread.sleep(500);
-                           } catch (InterruptedException e) {
-                               Thread.currentThread().interrupt();
-                           }
+                              // Thread.sleep(500);
+//                           } catch (InterruptedException e) {
+//                               e.printStackTrace();
+//                               Thread.currentThread().interrupt();
+//                           }
                     }
                 }
         );
