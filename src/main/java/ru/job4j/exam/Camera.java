@@ -1,5 +1,9 @@
 package ru.job4j.exam;
 
+/**
+ * Класс камеры описываемый с помощью идентификатора, источника данных и токена камеры
+ */
+
 public class Camera {
         private int id;
         private String sourceDataUrl;

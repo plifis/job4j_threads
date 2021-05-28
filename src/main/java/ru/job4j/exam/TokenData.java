@@ -1,5 +1,9 @@
 package ru.job4j.exam;
 
+/**
+ * Токен видео камеры
+ */
+
 public class TokenData {
     private String value;
     private int ttl;

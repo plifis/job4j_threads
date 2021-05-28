@@ -1,10 +1,14 @@
 package ru.job4j.exam;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.net.URL;
 import java.util.concurrent.*;
+
+/**
+ * Класс реализует алгоритм получения информации о видео камерах для доступа к которой пердаётся ссылка на общий список камер
+ * каждая запись о камере так же содержит ссылку на общую информацию о камере и ссылку на информацию о токене доступа к камере
+ * Вся информация представлена в формате JSON
+ */
 
 public class CameraAggregator implements Aggregator{
     private ExecutorService executor;
@@ -21,13 +25,6 @@ public class CameraAggregator implements Aggregator{
         try {
             String json = getSource(hyperLink).get();
                 this.add(json);
-            //            for (Camera camera : getCameraFromJSON(getSourceData(hyperLink).get())) {
-//                String sourceData = getSource(camera.getSourceDataUrl()).get();
-//                String tokenData = getSource(camera.getTokenDataUrl()).get();
-//                String sourceData = getSourceData(camera.getSourceDataUrl()).get();
-//                String tokenData = getSourceData(camera.getTokenDataUrl()).get();
-//                int id = camera.getId();
-//                String json = merge(id, sourceData, tokenData);
     } catch(Exception e){
                 e.printStackTrace();
             }
@@ -37,62 +34,19 @@ public class CameraAggregator implements Aggregator{
         list.add(json);
     }
 
-//
-//    private Camera[] getCameraFromJSON(String json) {
-//            GsonBuilder builder = new GsonBuilder();
-//            Gson gson = builder.create();
-//            return gson.fromJson(json, Camera[].class);
-//    }
-//    private CameraFull getCameraFullFromJSON(String json) {
-//        GsonBuilder builder = new GsonBuilder();
-//        Gson gson = builder.create();
-//        return gson.fromJson(json, CameraFull.class);
-//    }
-//
-//    private CompletableFuture<String> getSourceData(String link) {
-//        return CompletableFuture.supplyAsync(
-//                () -> {
-//                    StringBuilder builder = new StringBuilder();
-//            try {
-//                URL url = new URL(link);
-//                try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
-//                    String str;
-//                    while ((str = in.readLine()) != null) {
-//                        if ((str.equals("sourceDataUrl")) || (str.equals("tokenDataUrl"))) {
-//                            builder.append(getSource(str));
-//                        }
-//                    builder.append(str.trim());
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return builder.toString();
-//    }, pool
-//        );
-//    }
-//
-//
-//    private String merge(int id, String sourceData, String tokenData) {
-//        StringBuilder builder = new StringBuilder();
-//        builder.append("{").append(System.lineSeparator()).append("\"id\":").append(id).append(",").append(System.lineSeparator())
-//                .append(sourceData.replace("{", "").replace("}", "")).append(",").
-//                append(System.lineSeparator())
-//                .append(tokenData.replace("{", "").replace("}", ""))
-//                .append(System.lineSeparator())
-//                .append("}");
-//        return builder.toString();
-//    }
-
+    /**
+     * Метод парсит строку содержащую адрес гипперсылки, идентификатор,
+     * извлекает по ссылке на источник данных (SourceDataUrl) статус (Live etc) и ip адрес камеры
+     * извлекает по ссылке на токен камеры (tokenDataUrl), значение ключа (value) и время жизни пакета (ttl)
+     * @param link ссылка на список камер
+     * @return Future, содержащий результат работы в виде объекта String
+     */
     public Future<String> getSource(String link) {
         return this.getExecutor().submit(
                 () -> {
                     StringBuilder builder = new StringBuilder();
                     try {
                         URL url = new URL(link);
-                        System.out.println(Thread.currentThread().getName());
                         try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
                             String str;
                             while ((str = in.readLine()) != null) {
@@ -117,6 +71,12 @@ public class CameraAggregator implements Aggregator{
         return executor;
     }
 
+
+    /**
+     * Получение адреса гиперссылки из строки
+     * @param link строка содержащая адрес гиперссылку
+     * @return адрес гипперссылки
+     */
     private String getSubLink(String link) {
         int endStr = link.lastIndexOf("\"");
         return link.substring(link.indexOf("http"), endStr);

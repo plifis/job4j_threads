@@ -1,5 +1,9 @@
 package ru.job4j.exam;
 
+
+/**
+ * Класс описывает источник данных о видео камере
+ */
 public class SourceData {
     private String urlType;
     private String videoUrl;
